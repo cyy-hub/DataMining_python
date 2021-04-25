@@ -8,6 +8,7 @@ def prediction(df, userdf, Nn=15):
     corr = df.T.corr()     # 计算用户的相关person相关系数矩阵
     rats = userdf.copy()
     for usrid in userdf.index:
+        print(usrid)
         # step1:获取用户未评分电影
         dfnull = df.loc[usrid][df.loc[usrid].isnull()]    # 用户user1没有评分的电影：('mov6',nan)
         usrv = df.loc[usrid].mean()                       # 用户user1电影评分的均值
@@ -44,7 +45,7 @@ def recomm(df, userdf, Nn=15, TopN=3):
         ratnull = ratings.loc[usrid][ratft]
         # 对预测评分项进行排序
         if(len(ratnull) >= TopN):
-            sortlist = (ratnull.sort_values(ascending=False)).idnex[:TopN]
+            sortlist = (ratnull.sort_values(ascending=False)).index[:TopN]
         else:
             sortlist = ratnull.sort_values(ascending=False).index[:len(ratnull)]
         recomm.append(sortlist)
@@ -57,6 +58,8 @@ if __name__ == "__main__":
     traindata = pd.read_csv("./data/Chapter10/u1.base", sep='\t', index_col=None, header=None)  # [用户ID,电影ID,电影评分,时间标签] 8W条数据
     print(traindata.head())
     testdata = pd.read_csv("./data/Chapter10/u1.test", sep='\t', index_col=None, header=None)
+    traindata = traindata[:1000]
+    testdata = testdata[:1000]
     # 删除时间列--本例中没有用
     traindata.drop(3, axis=1, inplace=True)
     testdata.drop(3, axis=1, inplace=True)
@@ -74,5 +77,6 @@ if __name__ == "__main__":
     print('d', traindata.head())
     userdf = traindf.loc[testdf.index]
     trainrats, trainrecom = recomm(traindf, userdf)
-    print(trainrecom.head())
+    print(trainrecom[:1])
+    print(len(trainrecom))
     print('end')
